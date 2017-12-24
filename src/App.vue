@@ -10,7 +10,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import Navbar from '@/components/Navbar';
 
     export default {
@@ -20,3 +20,17 @@
         }
     };
 </script>
+
+<style>
+    @import '../node_modules/font-awesome/css/font-awesome.min.css';
+    @import '../node_modules/spinkit/css/spinkit.css';
+    @import '../node_modules/toastr/build/toastr.min.css';
+    @import '../node_modules/basicmodal/dist/basicModal.min.css';
+    @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+
+    @import '../static/css/bootstrap-fixes.css';
+    @import '../static/css/generics.css';
+    @import '../static/css/loading-animations.css';
+    @import '../static/css/paginated-list.css';
+</style>
+

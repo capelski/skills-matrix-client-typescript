@@ -1,10 +1,12 @@
+import toastr from 'toastr';
+
 export default class HttpBaseService {
     
     apiUrl = process.env.baseApiUrl;
     corsMode = process.env.corsMode;
 
     removeEntity(url) {
-        var options = {
+        var options = <RequestInit>{
             method: 'DELETE',
             mode: 'cors'
         };
@@ -17,7 +19,7 @@ export default class HttpBaseService {
     }
 
     getRequest(url, parameters, defaultValue) {        
-        var options = {
+        var options = <RequestInit>{
             method: 'GET',
             mode: 'cors',
             cache: 'default'
@@ -43,7 +45,7 @@ export default class HttpBaseService {
     }
 
     saveEntity(url, entitity) {
-        var options = {
+        var options = <RequestInit>{
             method: entitity.Id == 0 ? 'POST' : 'PUT',
             headers: new Headers({'content-type': 'application/json'}),
             body: JSON.stringify(entitity),

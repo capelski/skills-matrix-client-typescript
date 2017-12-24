@@ -1,3 +1,5 @@
+import * as basicModal from 'basicmodal';
+
 function actionModal(text, actionName) {
     return new Promise(function(resolve, reject) {
         basicModal.show({

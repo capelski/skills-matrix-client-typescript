@@ -55,7 +55,8 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+    import toastr from 'toastr';
     import Utils from '@/utils';
     import { getInstance } from '@/service-locator';
     import PaginatedList from '@/components/PaginatedList';
