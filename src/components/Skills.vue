@@ -34,9 +34,12 @@
 </template>
 
 <script lang="ts">
-    import Utils from '@/utils';
-    import { getInstance } from '@/service-locator';
-    import PaginatedList from '@/components/PaginatedList';
+    import Utils from '../utils';
+    import { getInstance } from '../service-locator';
+    import PaginatedList from './PaginatedList.vue';
+    import SkillService from '../services/skill-service';
+
+    const skillService = getInstance<SkillService>('SkillService');
 
     export default {
         components: {
@@ -44,12 +47,9 @@
         },
         data () {
             return {
-                skillsFetcher: (keywords, page, pageSize) =>
-                    Utils.stallPromise(this.skillService.getAll(keywords, page, pageSize), 1000)
+                skillsFetcher: (keywords: string, page: number, pageSize: number) =>
+                    Utils.stallPromise(skillService.getAll(keywords, page, pageSize), 1000)
             };
-        },
-        created() {
-            this.skillService = getInstance('SkillService');
         }
     }
 </script>

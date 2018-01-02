@@ -54,6 +54,29 @@
 </template>
 
 <script lang="ts">
+    import PaginatedData from '../models/PaginatedData';
+
+    interface ComponentData {
+        currentPage: number,
+        clearKeywords: Function,
+        data: PaginatedData<any>,
+        hasPagination: Boolean
+        hasSearcher: Boolean,
+        itemDrawer: Function,
+        itemKey: Function,
+        itemOnClick: Function,
+        itemsFetcher: (keywords: string, page: number, pageSize: number) => Promise<any>,
+        keywords: string,
+        loading: boolean,
+        maxPages: number,
+        pageOffset: number,
+        pages: Array<number>,
+        pageSize: number,
+        pageSizes: Array<number>,
+        searcherTimeout: number,
+        update: Function
+    }
+
     export default {
         props: {
             itemsFetcher: {
@@ -94,84 +117,95 @@
                 pageSizes: [10, 15, 25],
                 pageSize: 10,
 
-                data: {
-                    CurrentPage: 0,
-                    Items: [],
-                    TotalPages: 1,
-                    TotalRecords: 10
-                },
+                data: new PaginatedData([]),
 
                 loading: false
             };
         },
         watch: {
             itemsFetcher (newVal, oldVal) {
+                var component = <ComponentData>this;                
                 this.update();
             }
         },
         created() {
-            this.update();
+            var component = <ComponentData>this;
+            component.update();
         },
         methods: {
             update () {
-                this.loading = true;
-                this.itemsFetcher(this.keywords, this.currentPage - 1 + this.pageOffset, this.pageSize)
-                .then(paginatedData => {
-                    this.data = paginatedData;
-                    var availablePages = this.data.TotalPages - this.pageOffset;
-                    var pageBarPages = Math.min(availablePages, this.maxPages);
-                    this.pages = [];
+                var component = <ComponentData>this;
+
+                component.loading = true;
+                component.itemsFetcher(component.keywords, component.currentPage - 1 + component.pageOffset, component.pageSize)
+                .then((paginatedData : PaginatedData<any>) => {
+                    component.data = paginatedData;
+                    var availablePages = component.data.TotalPages - component.pageOffset;
+                    var pageBarPages = Math.min(availablePages, component.maxPages);
+                    component.pages = [];
                     for (var i = 1; i <= pageBarPages; ++i) {
-                        this.pages.push(i);
+                        component.pages.push(i);
                     }
-                    this.loading = false;
+                    component.loading = false;
                 });
             },
             search() {
-                if (this.searcherTimeout) {
-                    clearTimeout(this.searcherTimeout);
+                var component = <ComponentData>this;
+
+                component.currentPage = 1;
+                component.pageOffset = 0;
+                if (component.searcherTimeout) {
+                    clearTimeout(component.searcherTimeout);
                 }
-                this.searcherTimeout = setTimeout(this.update, 400);
+                component.searcherTimeout = setTimeout(component.update, 400);
             },
             pageUpdated (newPageNumber) {
+                var component = <ComponentData>this;
+                
                 var isPageChange = false;
                 if (!isNaN(newPageNumber)) {
-                    isPageChange = this.currentPage != newPageNumber;
-                    this.currentPage = newPageNumber;
+                    isPageChange = component.currentPage != newPageNumber;
+                    component.currentPage = newPageNumber;
                 }
-                else if (newPageNumber === 'previous' && (this.pageOffset - this.pages.length) >= 0) {
+                else if (newPageNumber === 'previous' && (component.pageOffset - component.pages.length) >= 0) {
                     isPageChange = true;
-                    this.currentPage = 1;
-                    this.pageOffset -= this.pages.length;
+                    component.currentPage = 1;
+                    component.pageOffset -= component.pages.length;
                 }
-                else if (newPageNumber === 'next' && (this.pageOffset + this.pages.length) < this.data.TotalPages) {
+                else if (newPageNumber === 'next' && (component.pageOffset + component.pages.length) < component.data.TotalPages) {
                     isPageChange = true;
-                    this.currentPage = 1;
-                    this.pageOffset += this.pages.length;
+                    component.currentPage = 1;
+                    component.pageOffset += component.pages.length;
                 }
 
                 if (isPageChange) {
-                    this.update();
+                    component.update();
                 }
             },
             pageSizeUpdated (size) {
-                var isSizeChange = this.pageSize != size;
-                this.pageSize = size;
+                var component = <ComponentData>this;
+                
+                var isSizeChange = component.pageSize != size;
+                component.pageSize = size;
                 if (isSizeChange) {
-                    this.pageOffset = 0;
-                    this.currentPage = 1;
-                    this.update();
+                    component.pageOffset = 0;
+                    component.currentPage = 1;
+                    component.update();
                 }
             },
             clearKeywords() {
-                this.keywords = undefined;
-                this.update();
+                var component = <ComponentData>this;
+                
+                component.keywords = undefined;
+                component.update();
             },
             _itemOnClick(item) {
-                var additionalActions = this.itemOnClick(item);
+                var component = <ComponentData>this;
+                
+                var additionalActions = component.itemOnClick(item);
                 if (additionalActions) {
                     if (additionalActions.clearKeywords) {
-                        this.clearKeywords();
+                        component.clearKeywords();
                     }
                 }
             }

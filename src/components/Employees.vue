@@ -34,9 +34,12 @@
 </template>
 
 <script lang="ts">
-    import Utils from '@/utils';
-    import { getInstance } from '@/service-locator';
-    import PaginatedList from '@/components/PaginatedList';
+    import Utils from '../utils';
+    import { getInstance } from '../service-locator';
+    import PaginatedList from './PaginatedList.vue';
+    import EmployeeService from '../services/employee-service';
+
+    const employeeService = getInstance<EmployeeService>('EmployeeService');
 
     export default {
         components: {
@@ -44,12 +47,9 @@
         },
         data () {
             return {
-                employeesFetcher: (keywords, page, pageSize) =>
-                    Utils.stallPromise(this.employeeService.getAll(keywords, page, pageSize), 1000)
+                employeesFetcher: (keywords: string, page: number, pageSize: number) =>
+                    Utils.stallPromise(employeeService.getAll(keywords, page, pageSize), 1000)
             };
-        },
-        created() {
-            this.employeeService = getInstance('EmployeeService');
         }
     }
 </script>

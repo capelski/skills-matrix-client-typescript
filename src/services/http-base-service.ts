@@ -5,7 +5,7 @@ export default class HttpBaseService {
     apiUrl = process.env.baseApiUrl;
     corsMode = process.env.corsMode;
 
-    removeEntity(url) {
+    removeEntity(url: string) : Promise<any> {
         var options = <RequestInit>{
             method: 'DELETE',
             mode: 'cors'
@@ -18,7 +18,7 @@ export default class HttpBaseService {
         });
     }
 
-    getRequest(url, parameters, defaultValue) {        
+    getRequest(url: string, parameters: any, defaultValue: any) : Promise<any> {        
         var options = <RequestInit>{
             method: 'GET',
             mode: 'cors',
@@ -44,7 +44,7 @@ export default class HttpBaseService {
         });
     }
 
-    saveEntity(url, entitity) {
+    saveEntity(url: string, entitity: any) : Promise<any> {
         var options = <RequestInit>{
             method: entitity.Id == 0 ? 'POST' : 'PUT',
             headers: new Headers({'content-type': 'application/json'}),

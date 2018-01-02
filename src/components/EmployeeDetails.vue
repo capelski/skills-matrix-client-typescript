@@ -57,18 +57,25 @@
 
 <script lang="ts">
     import toastr from 'toastr';
-    import Utils from '@/utils';
-    import { getInstance } from '@/service-locator';
-    import PaginatedList from '@/components/PaginatedList';
+    import Utils from '../utils';
+    import { getInstance } from '../service-locator';
+    import PaginatedList from './PaginatedList.vue';
+    import PaginatedData from '../models/PaginatedData';
+    import EmployeeService from '../services/employee-service';
+    import SkillService from '../services/skill-service';
 
+    const employeeService = getInstance<EmployeeService>('EmployeeService');
+    const skillService = getInstance<SkillService>('SkillService');
 
-    function paginatedListData(items) {
-        return {
-            CurrentPage: 0,
-            Items: items || [],
-            TotalPages: 1,
-            TotalRecords: (items || []).length
-        };
+    interface ComponentData {
+        employee: any,
+        employeeSkills: (keywords: string, page: number, pageSize: number) => Promise<any>,
+        loading: boolean,
+        mode: string,
+        newSkillDrawer: (employee: any) => string
+        notFound: boolean,
+        ownedSkillDrawer: (employee: any) => string,
+        skillsFetcher: (keywords: string, page: number, pageSize: number) => Promise<any>,
     }
 
     export default {
@@ -85,19 +92,24 @@
                     Name: '',
                     Skills: []
                 },
-                employeeSkills: (keywords, page, pageSize) => 
-                    Promise.resolve(paginatedListData(this.employee.Skills)),
-                skillsFetcher: (keywords, page, pageSize) =>
-                    keywords ?
-                        Utils.stallPromise(this.skillService.getAll(keywords, page, pageSize), 500)
-                        .then(paginatedContent => {
+                employeeSkills: (keywords, page, pageSize) => {
+                    var component = <ComponentData>this;
+                    return Promise.resolve(new PaginatedData(component.employee.Skills));
+                },
+                skillsFetcher: (keywords, page, pageSize) => {
+                    var component = <ComponentData>this;
+                    return keywords ?
+                        Utils.stallPromise(skillService.getAll(keywords, page, pageSize), 500)
+                        .then((paginatedContent : any) => {
                             paginatedContent.Items =
-                                Utils.leftOuterJoin(paginatedContent.Items, this.employee.Skills, 'Id');
+                                Utils.leftOuterJoin(paginatedContent.Items, component.employee.Skills, 'Id');
                             return paginatedContent;
                         }) :
-                        Promise.resolve([]),
+                        Promise.resolve([]);
+                },
                 ownedSkillDrawer: skill => {
-                    if (this.mode == 'read') {
+                    var component = <ComponentData>this;
+                    if (component.mode == 'read') {
                         return skill.Name;
                     }
                     return `<i class="fa fa-times text-danger"></i> ${skill.Name}`;
@@ -106,67 +118,75 @@
             };
         },
         created() {
-            this.employeeService = getInstance('EmployeeService');
-            this.skillService = getInstance('SkillService');
+            var component = <ComponentData>this;
 
             if (this.$route.path.indexOf('/edit/') > -1) {
-                this.mode = 'edit';
+                component.mode = 'edit';
             }
 
             var employeeId = this.$route.params.id;
             if (employeeId != 0) {
-                Utils.stallPromise(this.employeeService.getById(employeeId), 1000)
+                Utils.stallPromise(employeeService.getById(employeeId), 1000)
                 .then(employee => {
                     if (employee) {
-                        this.employee = employee;
-                        this.employeeSkills = (keywords, page, pageSize) =>
-                            Promise.resolve(paginatedListData(this.employee.Skills));
+                        component.employee = employee;
+                        component.employeeSkills = (keywords, page, pageSize) =>
+                            Promise.resolve(new PaginatedData(component.employee.Skills));
                     }
                     else {
-                        this.notFound = true;
+                        component.notFound = true;
                     }
-                    this.loading = false;
+                    component.loading = false;
                 });
             }
             else {
-                this.loading = false;
+                component.loading = false;
             }
         },
         methods: {
             addSkill(skill) {
-                this.employee.Skills.push(skill);
+                var component = <ComponentData>this;
+
+                component.employee.Skills.push(skill);
                 return {
                     clearKeywords: true
                 };
             },
             discardChanges() {
-                if (this.employee.Id != 0) {
-                    this.$router.push(`/employee/${this.employee.Id}`);
+                var component = <ComponentData>this;
+
+                if (component.employee.Id != 0) {
+                    this.$router.push(`/employee/${component.employee.Id}`);
                 }
                 else {
                     this.$router.push('/employees');
                 }
             },
             edit() {
-                this.$router.push(`/employee/edit/${this.employee.Id}`);
+                var component = <ComponentData>this;
+                this.$router.push(`/employee/edit/${component.employee.Id}`);
             },
             removeSkill(skill) {
-                if (this.mode == 'edit') {
-                    this.employee.Skills = this.employee.Skills.filter(s => s.Id != skill.Id);
-                    this.employeeSkills = (keywords, page, pageSize) =>
-                        Promise.resolve(paginatedListData(this.employee.Skills));
+                var component = <ComponentData>this;
+
+                if (component.mode == 'edit') {
+                    component.employee.Skills = component.employee.Skills.filter(s => s.Id != skill.Id);
+                    component.employeeSkills = (keywords, page, pageSize) =>
+                        Promise.resolve(new PaginatedData(component.employee.Skills));
                 }
                 else {
                     this.$router.push(`/skill/${skill.Id}`);
                 }
             },
             remove() {
+                var component = <ComponentData>this;
+
                 Utils.actionModal(
-                    '<div>Are you sure you want to delete ' + this.employee.Name + '?</div>',
+                    '<div>Are you sure you want to delete ' + component.employee.Name + '?</div>',
                     'Delete')
                 .then(acceptance => {
                     if (acceptance) {
-                        this.employeeService.remove(this.employee.Id)
+                        employeeService.remove(component.employee.Id)
                         .then(employee => {
                             this.$router.push('/employees');
                         });
@@ -174,8 +194,10 @@
                 });
             },
             save() {
-                if (this.employee.Name && this.employee.Name.length > 2) {
-                    this.employeeService.save(this.employee).then(employee => {
+                var component = <ComponentData>this;
+
+                if (component.employee.Name && component.employee.Name.length > 2) {
+                    employeeService.save(component.employee).then(employee => {
                         this.$router.push(`/employee/${employee.Id}`);
                     });
                 }

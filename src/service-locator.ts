@@ -1,5 +1,5 @@
-import EmployeeService from '@/services/employee-service';
-import SkillService from '@/services/skill-service';
+import EmployeeService from './services/employee-service';
+import SkillService from './services/skill-service';
 
 const services = [
     {
@@ -12,7 +12,7 @@ const services = [
     }
 ];
 
-function getInstance(serviceName) {
+function getInstance<T>(serviceName: string) : T {
     var instance;
     var service = services.find(s => s.name == serviceName);
     if (service) instance = service.instance;

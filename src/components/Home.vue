@@ -57,9 +57,15 @@
 </template>
 
 <script lang="ts">
-    import Utils from '@/utils';
-    import { getInstance } from '@/service-locator';
-    import PaginatedList from '@/components/PaginatedList';
+    import Utils from '../utils';
+    import { getInstance } from '../service-locator';
+    import PaginatedList from './PaginatedList.vue';
+    import PaginatedData from '../models/PaginatedData';
+    import EmployeeService from '../services/employee-service';
+    import SkillService from '../services/skill-service';
+
+    const employeeService = getInstance<EmployeeService>('EmployeeService');
+    const skillService = getInstance<SkillService>('SkillService');
 
     export default {
         components: {
@@ -67,39 +73,21 @@
         },
         data () {
             return {
-                employeesFetcher: (keywords, page, pageSize) =>
-                    Utils.stallPromise(this.employeeService.getMostSkilled(), 1000)
-                    .then(employees => {
-                            return {
-                            CurrentPage: 0,
-                            Items: employees,
-                            TotalPages: 1,
-                            TotalRecords: 5
-                        };
-                    }),
+                employeesFetcher: (keywords: string, page: number, pageSize: number) =>
+                    Utils.stallPromise(employeeService.getMostSkilled(), 1000)
+                    .then(employees => new PaginatedData(employees)),
                 employeeDrawer (employee) {
                     return `${ employee.Name }
                         <span class="badge floating">${ employee.Skills.length }</span>`;
                 },
-                skillsFetcher: (keywords, page, pageSize) =>
-                    Utils.stallPromise(this.skillService.getRearest(), 1000)
-                    .then(skills => {
-                            return {
-                            CurrentPage: 0,
-                            Items: skills,
-                            TotalPages: 1,
-                            TotalRecords: 5
-                        };
-                    }),
+                skillsFetcher: (keywords: string, page: number, pageSize: number) =>
+                    Utils.stallPromise(skillService.getRearest(), 1000)
+                    .then(skills => new PaginatedData(skills)),
                 skillDrawer (skill) {
                     return `${ skill.Name }
                         <span class="badge floating">${ skill.Employees.length }</span>`;
                 }
             };
-        },
-        created() {
-            this.employeeService = getInstance('EmployeeService');
-            this.skillService = getInstance('SkillService');
         }
     };
 </script>
