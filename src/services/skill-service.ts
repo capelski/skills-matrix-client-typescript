@@ -1,24 +1,25 @@
 import HttpBaseService from './http-base-service';
+import Skill from '../models/Skill';
 
 export default class SkillService extends HttpBaseService {
 
-    getRearest() : Promise<any> {
-        return this.getRequest('api/skill/getRearest', null, []);
+    getRearest() : Promise<Array<Skill>> {
+        return this.getRequest<Skill[]>('api/skill/getRearest', null, []);
     }
     
-    getAll(keywords: string, page: number, pageSize: number) : Promise<any> {
-        return this.getRequest('api/skill', { keywords, page, pageSize }, []);
+    getAll(keywords: string, page: number, pageSize: number) : Promise<Array<Skill>> {
+        return this.getRequest<Skill[]>('api/skill', { keywords, page, pageSize }, []);
     }
     
-    getById(id: number) : Promise<any> {
-        return this.getRequest('api/skill/getById', { id }, null);
+    getById(id: number) : Promise<Skill> {
+        return this.getRequest<Skill>('api/skill/getById', { id }, null);
     }
     
-    remove(skillId: number) : Promise<any> {
-        return this.removeEntity(`api/skill?id=${skillId}`);
+    remove(skillId: number) : Promise<Skill> {
+        return this.removeEntity<Skill>(`api/skill?id=${skillId}`);
     }
     
-    save(skill: any) : Promise<any> {
-        return this.saveEntity('api/skill', skill);
+    save(skill: any) : Promise<Skill> {
+        return this.saveEntity<Skill>('api/skill', skill);
     }
 };

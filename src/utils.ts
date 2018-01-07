@@ -32,7 +32,7 @@ function leftOuterJoin<T>(a: Array<T>, b: Array<T>, propertyName: string) : Arra
 
 function stallPromise<T>(promise: Promise<T>, minimumTime: number) : Promise<T> {
     return Promise.all([promise, wait(minimumTime)])
-    .then((results) => results[0]);
+    .then(results => results[0]);
 }
 
 function wait(time: number) : Promise<void> {

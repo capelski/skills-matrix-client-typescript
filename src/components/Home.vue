@@ -60,9 +60,11 @@
     import Utils from '../utils';
     import { getInstance } from '../service-locator';
     import PaginatedList from './PaginatedList.vue';
-    import PaginatedData from '../models/PaginatedData';
     import EmployeeService from '../services/employee-service';
     import SkillService from '../services/skill-service';
+    import PaginatedData from '../models/PaginatedData';
+    import Employee from '../models/Employee';
+    import Skill from '../models/Skill';
 
     const employeeService = getInstance<EmployeeService>('EmployeeService');
     const skillService = getInstance<SkillService>('SkillService');
@@ -73,17 +75,19 @@
         },
         data () {
             return {
-                employeesFetcher: (keywords: string, page: number, pageSize: number) =>
-                    Utils.stallPromise(employeeService.getMostSkilled(), 1000)
-                    .then(employees => new PaginatedData(employees)),
-                employeeDrawer (employee) {
+                employeesFetcher: (keywords: string, page: number, pageSize: number) => {
+                    return Utils.stallPromise(<Promise<Employee[]>> employeeService.getMostSkilled(), 1000)
+                    .then((employees: Array<Employee>) => new PaginatedData(employees));
+                },
+                employeeDrawer (employee: Employee) {
                     return `${ employee.Name }
                         <span class="badge floating">${ employee.Skills.length }</span>`;
                 },
-                skillsFetcher: (keywords: string, page: number, pageSize: number) =>
-                    Utils.stallPromise(skillService.getRearest(), 1000)
-                    .then(skills => new PaginatedData(skills)),
-                skillDrawer (skill) {
+                skillsFetcher: (keywords: string, page: number, pageSize: number) => {
+                    return Utils.stallPromise(<Promise<Skill[]>> skillService.getRearest(), 1000)
+                    .then((skills: Array<Skill>) => new PaginatedData(skills));
+                },
+                skillDrawer (skill: Skill) {
                     return `${ skill.Name }
                         <span class="badge floating">${ skill.Employees.length }</span>`;
                 }

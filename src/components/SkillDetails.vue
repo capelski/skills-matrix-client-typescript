@@ -61,6 +61,7 @@
     import PaginatedData from '../models/PaginatedData';
     import EmployeeService from '../services/employee-service';
     import SkillService from '../services/skill-service';
+    import Skill from '../models/Skill';
 
     const employeeService = getInstance<EmployeeService>('EmployeeService');
     const skillService = getInstance<SkillService>('SkillService');
@@ -72,7 +73,7 @@
         newEmployeeDrawer: (employee: any) => string
         notFound: boolean,
         ownedEmployeeDrawer: (employee: any) => string,
-        skill: any,
+        skill: Skill,
         skillEmployees: (keywords: string, page: number, pageSize: number) => Promise<any>,
     }
 

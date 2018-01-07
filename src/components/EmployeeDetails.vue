@@ -63,12 +63,13 @@
     import PaginatedData from '../models/PaginatedData';
     import EmployeeService from '../services/employee-service';
     import SkillService from '../services/skill-service';
+    import Employee from '../models/Employee';
 
     const employeeService = getInstance<EmployeeService>('EmployeeService');
     const skillService = getInstance<SkillService>('SkillService');
 
     interface ComponentData {
-        employee: any,
+        employee: Employee,
         employeeSkills: (keywords: string, page: number, pageSize: number) => Promise<any>,
         loading: boolean,
         mode: string,

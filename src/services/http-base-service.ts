@@ -5,20 +5,21 @@ export default class HttpBaseService {
     apiUrl = process.env.baseApiUrl;
     corsMode = process.env.corsMode;
 
-    removeEntity(url: string) : Promise<any> {
+    removeEntity<T>(url: string) : Promise<T> {
         var options = <RequestInit>{
             method: 'DELETE',
             mode: 'cors'
         };
 
         return fetch(this.apiUrl + url, options)
-        .then(response => response.json())
+        .then(response => <Promise<T>> response.json())
         .catch(error => {
             toastr.error('A network error ocurred', 'Oops!', {timeOut: 4000});
+            return null;
         });
     }
 
-    getRequest(url: string, parameters: any, defaultValue: any) : Promise<any> {        
+    getRequest<T>(url: string, parameters: any, defaultValue: T) : Promise<T> {        
         var options = <RequestInit>{
             method: 'GET',
             mode: 'cors',
@@ -37,14 +38,14 @@ export default class HttpBaseService {
         }
         
         return fetch(this.apiUrl + url, options)
-        .then(response => response.json())
+        .then(response => <Promise<T>> response.json())
         .catch(error => {
             toastr.error('A network error ocurred', 'Oops!', {timeOut: 4000});
             return defaultValue;
         });
     }
 
-    saveEntity(url: string, entitity: any) : Promise<any> {
+    saveEntity<T>(url: string, entitity: any) : Promise<T> {
         var options = <RequestInit>{
             method: entitity.Id == 0 ? 'POST' : 'PUT',
             headers: new Headers({'content-type': 'application/json'}),
@@ -53,9 +54,10 @@ export default class HttpBaseService {
         };
 
         return fetch(this.apiUrl + url, options)
-        .then(response => response.json())
+        .then(response => <Promise<T>> response.json())
         .catch(error => {
             toastr.error('A network error ocurred', 'Oops!', {timeOut: 4000});
+            return null;
         });
     }
 };
