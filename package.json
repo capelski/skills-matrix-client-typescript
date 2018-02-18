@@ -12,9 +12,7 @@
   "dependencies": {
     "@types/node": "^8.5.2",
     "basicmodal": "^3.3.9",
-    "bootstrap": "^3.3.7",
     "font-awesome": "^4.7.0",
-    "jquery": "^2.2.0",
     "spinkit": "^1.2.5",
     "toastr": "^2.1.4",
     "ts-loader": "^3.2.0",
