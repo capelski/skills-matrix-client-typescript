@@ -1,9 +1,10 @@
 {
-  "name": "skills-matrix",
+  "name": "skills-matrix-client-typescript",
   "version": "1.0.0",
-  "description": "Skills matrix web application client implemented with Vuex",
-  "author": "Carles Capellas",
-  "private": true,
+  "description": "Skills matrix web application client implemented with Vue, Typescript and Webpack",
+  "main": "index.js",
+  "author": "Carles Capellas <capellas.carles@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "dev": "node build/dev-server.js",
     "start": "npm run dev",
@@ -12,6 +13,8 @@
   "dependencies": {
     "@types/node": "^8.5.2",
     "basicmodal": "^3.3.9",
+    "bootstrap": "^3.3.7",
+    "express": "^4.17.1",
     "font-awesome": "^4.7.0",
     "spinkit": "^1.2.5",
     "toastr": "^2.1.4",
@@ -33,7 +36,6 @@
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.28.0",
     "eventsource-polyfill": "^0.9.6",
-    "express": "^4.14.1",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
     "friendly-errors-webpack-plugin": "^1.6.1",
