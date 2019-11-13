@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/node": "8.5.2",
     "basicmodal": "3.3.9",
-    "bootstrap": "3.3.7",
+    "bootstrap": "3.4.1",
     "express": "4.17.1",
     "font-awesome": "4.7.0",
     "spinkit": "1.2.5",
